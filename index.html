@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Block №34 · Manhattan Cutaway — The Living Ant Farm</title>
+<style>
+  :root {
+    --ink: #17293d;
+    --ink-soft: #4e657c;
+    --paper: rgba(250, 249, 245, 0.93);
+    --edge: rgba(23, 41, 61, 0.14);
+    --red: #c0392b;
+    --blue: #2f6f9e;
+    --shadow: 0 12px 34px rgba(12, 28, 44, 0.2), 0 2px 6px rgba(12, 28, 44, 0.1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #101820; }
+  body {
+    font-family: "Avenir Next", "Segoe UI", Inter, system-ui, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+  }
+  #stage { position: fixed; inset: 0; }
+  canvas { display: block; }
+
+  .ui { transition: opacity 620ms ease; }
+  .ui.hidden { opacity: 0; pointer-events: none; }
+
+  #desk {
+    position: fixed; left: 16px; bottom: 16px; width: 296px; padding: 11px 12px 12px;
+    background: var(--paper); border: 1px solid var(--edge); border-radius: 13px;
+    box-shadow: var(--shadow); backdrop-filter: blur(12px) saturate(1.12);
+    display: flex; flex-direction: column; gap: 9px;
+  }
+  .cap {
+    font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--ink-soft); font-weight: 700; margin: 0 0 5px;
+    display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+  }
+  .cap b { color: var(--ink); font-weight: 700; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+  .row { display: flex; gap: 5px; flex-wrap: wrap; }
+  button.chip {
+    appearance: none; border: 1px solid var(--edge); background: #fff; color: var(--ink);
+    font: inherit; font-size: 10.5px; font-weight: 600; letter-spacing: .01em;
+    padding: 5px 8px; border-radius: 7px; cursor: pointer; line-height: 1;
+    transition: transform .12s ease, background .16s ease, color .16s ease, border-color .16s ease;
+  }
+  button.chip:hover { border-color: rgba(23,41,61,.34); transform: translateY(-1px); }
+  button.chip.on { background: var(--ink); color: #fdfcf8; border-color: var(--ink); }
+  button.chip.tick { background: #fdeecf; border-color: #e2c48d; }
+  .chip.wide { flex: 1 1 auto; text-align: center; justify-content: center; }
+
+  input[type=range] {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 17px;
+    background: transparent; cursor: ew-resize; margin: 0;
+  }
+  input[type=range]::-webkit-slider-runnable-track {
+    height: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, rgba(23,41,61,.28), rgba(23,41,61,.12));
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 13px; height: 13px; margin-top: -5px;
+    border-radius: 50%; background: #fffdf7; border: 1.6px solid var(--ink);
+    box-shadow: 0 1px 3px rgba(12,28,44,.3);
+  }
+  input[type=range]::-moz-range-track { height: 3px; background: rgba(23,41,61,.24); border-radius: 2px; }
+  input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: #fffdf7; border: 1.6px solid var(--ink); }
+
+  #readout {
+    position: fixed; right: 16px; top: 16px; padding: 9px 12px; text-align: right;
+    background: var(--paper); border: 1px solid var(--edge); border-radius: 12px;
+    box-shadow: var(--shadow); font-size: 10.5px; color: var(--ink-soft); line-height: 1.5;
+    font-variant-numeric: tabular-nums; min-width: 148px;
+  }
+  #readout .big { font-size: 21px; color: var(--ink); font-weight: 600; letter-spacing: -.01em; }
+  #readout .mid { font-size: 12.5px; color: var(--ink); font-weight: 600; }
+  #readout .sep { height: 1px; background: var(--edge); margin: 7px 0; }
+  #readout .k { display: flex; justify-content: space-between; gap: 10px; }
+
+  #hint {
+    position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%);
+    font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+    color: rgba(255,255,255,.66); text-shadow: 0 1px 3px rgba(0,0,0,.5); pointer-events: none;
+  }
+
+  #loader {
+    position: fixed; inset: 0; display: grid; place-items: center; background: #0e1620;
+    color: #cfe0ee; font-size: 11px; letter-spacing: .28em; text-transform: uppercase;
+    transition: opacity .8s ease; z-index: 10;
+  }
+  #loader.gone { opacity: 0; pointer-events: none; }
+  #loader span { position: relative; }
+  #loader span:after {
+    content: ''; position: absolute; left: 0; bottom: -10px; height: 1px; width: 100%;
+    background: linear-gradient(90deg, transparent, #7fb2d8, transparent);
+    animation: sweep 1.6s ease-in-out infinite;
+  }
+  @keyframes sweep { 0%,100% { opacity: .2; transform: scaleX(.3);} 50% { opacity: 1; transform: scaleX(1);} }
+</style>
+</head>
+<body>
+  <div id="stage"></div>
+  <div id="loader"><span>Excavating block №34</span></div>
+
+  <div id="readout" class="ui"></div>
+
+  <div id="desk" class="ui"></div>
+  <div id="hint" class="ui">drag to orbit · wheel to zoom · shift-drag to pan</div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.169.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
