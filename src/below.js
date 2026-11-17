@@ -293,9 +293,15 @@ function upperLine(ctx) {
   ctx.only3d(KEYS.body, U.x0, U.x1, U.platTop + 0.005, U.platTop + 0.02, U.platformZ0 + 0.18, U.platformZ0 + 0.5, col('#d8c14a'));
   ctx.only3d(KEYS.body, U.x0, U.x1, U.platTop + 0.005, U.platTop + 0.02, U.platformZ1 - 0.5, U.platformZ1 - 0.18, col('#d8c14a'));
 
-  /* back-of-house walls behind each track, tiled, with a base course */
-  for (const [zWall, tint] of [[U.platformZ0 + 0.02, '#a9b8b2'], [U.platformZ1 - 0.02, '#9fb0a9']]) {
-    ctx.solid(KEYS.body, U.x0, U.x1, U.floorY, U.ceilY - 0.1, zWall - 0.02, zWall + (zWall === U.platformZ0 + 0.02 ? -0.24 : 0.24), tint, M.METRO, { ink: 0.7 });
+  /* the platform edges stay OPEN — a section drawing only works if you can see
+     the train standing at the platform behind the crowd. The tiling lives on
+     the box's back wall, where the ads hang too. */
+  const backWall = -13.15;
+  ctx.solid(KEYS.body, U.x0, U.x1, U.floorY, U.ceilY - 0.05, backWall - 0.28, backWall, '#a9b8b2', M.METRO, { ink: 0.75 });
+  ctx.onlyCut(U.x0, U.x1, U.floorY, U.floorY + 0.34, backWall + 0.01, backWall + 0.05, M.TAR, '#2a2e33', { z0: backWall, z1: backWall + 0.05, ink: 0.5 });
+  /* a tiled chase and cable trunking along it */
+  for (const [zy, cw, ct] of [[U.platTop + 2.9, 0.34, '#8d949b'], [U.platTop + 3.3, 0.2, '#7f878f']]) {
+    ctx.shell(KEYS.metal).tubeX('metal', zy, backWall - 0.22, U.x0, U.x1, cw * 0.35, cw, 8, col(ct), {});
   }
   /* track beds: ballast, sleepers, rails, third rail */
   for (const zt of [U.trackA, U.trackB]) {
@@ -321,10 +327,14 @@ function upperLine(ctx) {
   for (let x = U.x0 + 1.4; x < U.x1 - 0.6; x += 3.1) {
     ctx.only3d(KEYS.glow, x, x + 1.9, U.ceilY - 0.24, U.ceilY - 0.16, U.platformZ0 + 0.5, U.platformZ1 - 0.5, col('#ffeec8'));
   }
-  /* ad panels, route roundel, tiled band on the wall */
-  for (let x = U.x0 + 1.2; x < U.x1 - 2.2; x += 5.4) {
-    for (const [zw, dir] of [[U.platformZ0 + 0.02, -1], [U.platformZ1 - 0.02, 1]]) {
-      ctx.only3d(KEYS.glow, x, x + 2.6, U.platTop + 1.0, U.platTop + 2.35, zw + dir * 0.01, zw + dir * 0.06, col(R.chance(0.5) ? '#c9563c' : '#2f6f9e'));
+  /* ad panels on the back wall, and signage hanging over the platform */
+  for (let x = U.x0 + 1.2; x < U.x1 - 2.4; x += 5.1) {
+    ctx.only3d(KEYS.glow, x, x + 2.8, U.platTop + 1.15, U.platTop + 2.5, backWall - 0.31, backWall - 0.25, col(R.chance(0.5) ? '#c9563c' : '#2f6f9e'));
+    ctx.only3d(KEYS.body, x - 0.1, x + 2.9, U.platTop + 1.05, U.platTop + 2.6, backWall - 0.33, backWall - 0.3, deep('#59636a', 0.2));
+    if (R.chance(0.7)) {
+      const sx = x + 1.2;
+      ctx.only3d(KEYS.glow, sx, sx + 1.7, U.ceilY - 0.9, U.ceilY - 0.35, U.platformZ0 + 0.55, U.platformZ0 + 0.62, col(R.chance(0.5) ? '#e0c04a' : '#d8d8d8'));
+      ctx.shell(KEYS.metal).tubeX('metal', U.ceilY - 0.32, U.platformZ0 + 0.58, sx, sx + 1.7, 0.012, 0.022, 6, col('#7f878f'), {});
     }
   }
   /* benches, waste bins, an exit stair up to the street */
@@ -389,7 +399,7 @@ function expressTube(ctx) {
   /* cast-iron lining built ring by ring so the joints catch the light */
   for (let x = E.x0; x < E.x1; x += 0.78) {
     const shade = 0.86 + 0.16 * ((Math.floor(x / 0.78) % 3) / 3);
-    ctx.shell('body').tubeX('body', E.cy, E.cz, x, Math.min(x + 0.74, E.x1), E.r - E.lining, E.r, segs, col('#7e8790').multiplyScalar(shade), { inner: true });
+    ctx.shell('body').tubeX('body', E.cy, E.cz, x, Math.min(x + 0.74, E.x1), E.r - E.lining, E.r, segs, col('#9aa4ad').multiplyScalar(shade), { inner: true });
   }
   /* invert slab, walkway, rails, third rail, cable arms */
   ctx.only3d(KEYS.body, E.x0, E.x1, E.invertY - 0.3, E.invertY + 0.06, E.cz - 2.0, E.cz + 2.0, deep('#6e7378', 0.25));

@@ -150,8 +150,10 @@ export class Sky {
       [8, -12.0, -4.6, '#ffd9a8', 26, 0.7],
       [-8, -13.0, -10.4, '#cfe0ff', 24, 0.5],
       [26, -15.4, -5.0, '#cfe6ff', 22, 0.55],
-      [-24, -22.4, -2.7, '#ffd6a0', 26, 0.6],
-      [14, -22.4, -2.7, '#ffd6a0', 26, 0.6],
+      [-30, -22.0, -2.7, '#ffdaae', 34, 1.25],
+      [-8, -22.0, -2.7, '#ffdaae', 34, 1.25],
+      [14, -22.0, -2.7, '#ffdaae', 34, 1.25],
+      [34, -22.0, -2.7, '#ffdaae', 34, 1.1],
       [-22, -6.4, -3.6, '#ffe8c8', 20, 0.45],
       [12, -6.4, -3.6, '#ffe8c8', 20, 0.45],
       [28, -11.6, -4.0, '#dfe9ff', 18, 0.4],
@@ -203,7 +205,7 @@ export class Sky {
 
     for (const l of this.tunnelLights) {
       l.intensity = l.userData.base ?? (l.userData.base = l.intensity);
-      l.intensity = l.userData.base * (0.78 + 0.5 * (1 - dayF));
+      l.intensity = l.userData.base * (0.85 + 0.45 * (1 - dayF));
     }
 
     /* fog tracks the sky and stays out of the way of the cut face */

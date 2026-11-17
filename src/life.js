@@ -200,7 +200,7 @@ export class Life {
         const carIdx = Math.floor(R() * local.cars);
         const doorX = local.x - local.dir * (carIdx + 0.5) * (12.2 + 0.35) + local.dir * 6.1 + (R.pick([-4.6, -2.2, 0.2, 2.6, 4.9]) || 0) * (local.dir > 0 ? 1 : -1);
         const px = clamp(doorX, U.x0 + 1.5, U.x1 - 1.5);
-        const pz = clamp(U.platformZ0 + 0.9 + R() * 0.8, U.platformZ0 + 0.5, U.platformZ1 - 0.5);
+        const pz = clamp(U.platformZ0 + 0.8 + R() * (U.platformZ1 - U.platformZ0 - 1.6), U.platformZ0 + 0.5, U.platformZ1 - 0.5);
         const p = this.crowd.add({
           x: px, y: U.platTop, z: pz,
           pose: POSE.WALK, speed: 0.55,
@@ -229,7 +229,7 @@ export class Life {
         if (!p.target && R.chance(0.5)) {
           const carIdx = Math.floor(R() * local.cars);
           const doorX = local.x - local.dir * (carIdx + 0.5) * (12.2 + 0.35) + local.dir * 6.1 + (R.pick([-4.6, -2.2, 0.2, 2.6, 4.9]) || 0);
-          this.crowd.send(p, { x: clamp(doorX, U.x0 + 1, U.x1 - 1), y: U.platTop, z: U.platformZ0 + 1.0 });
+          this.crowd.send(p, { x: clamp(doorX, U.x0 + 1, U.x1 - 1), y: U.platTop, z: U.platformZ1 - 1.0 });
           p.boarding = true;
           taken += 1;
         }

@@ -114,9 +114,11 @@ export class Trains {
     this.expressWin = mk(windowGeo(), mats.glow('expressWin', 1, 1), 30, 'expressWin');
 
     /* three consists on the local box, one express rake */
+    /* the stopping train rides the far track so the platform and its crowd stay
+       legible from the section; the through train passes in front of it */
     this.local = [
-      { track: UPPER.trackA, dir: 1, cars: 4, stops: true, state: 'run', x: -60, v: 0, target: 15.4, dwell: 0, label: 'local' },
-      { track: UPPER.trackB, dir: -1, cars: 4, stops: false, state: 'run', x: 40, v: 13, target: -70, dwell: 0, label: 'through' },
+      { track: UPPER.trackB, dir: 1, cars: 4, stops: true, state: 'run', x: -60, v: 0, target: 15.4, dwell: 0, label: 'local' },
+      { track: UPPER.trackA, dir: -1, cars: 4, stops: false, state: 'run', x: 40, v: 13, target: -70, dwell: 0, label: 'through' },
     ];
     this.express = { x: -80, v: 22, dir: 1, cars: 8, carLen: 15.6, next: 6 };
     this.maintenance = { x: 26.5, z: GALLERY_Z() };
